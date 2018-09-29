@@ -3,25 +3,67 @@ package data
 import "testing"
 import "os"
 
+func getTestVar(varname string, t *testing.T) string {
+	val, isSet := os.LookupEnv(varname)
+
+	if !isSet {
+		t.Error("Specify TEST_COLLECTION_PATH env var")
+	}
+
+	return val
+}
+
 func TestLoadPapers(t *testing.T) {
 
-	var isSet = false
-	var testPath, testIndex string
+	testPath := getTestVar("TEST_COLLECTION_PATH", t)
 
-	testPath, isSet = os.LookupEnv("TEST_COLLECTION_PATH")
+	testIndex := getTestVar("TEST_COLLECTION_INDEX", t)
 
-	if !isSet {
-		panic("Specify TEST_COLLECTION_PATH env var")
-	}
-
-	testIndex, isSet = os.LookupEnv("TEST_COLLECTION_INDEX")
-
-	if !isSet {
-		panic("Specify TEST_COLLECTION_INDEX env var")
-	}
-
-	var p = PaperCollection{"Test", testPath, testIndex}
+	var p = PaperCollection{"Test", testPath, testIndex, nil}
 
 	// load the papers
-	p.LoadPapers()
+	err := p.LoadPapers()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(p.Articles) < 1 {
+		t.Log("Did not correctly read index file")
+		t.Fail()
+	}
+
+}
+
+func TestFindPapers(t *testing.T) {
+
+	testPath := getTestVar("TEST_COLLECTION_PATH", t)
+
+	testIndex := getTestVar("TEST_COLLECTION_INDEX", t)
+
+	var p = PaperCollection{"Test", testPath, testIndex, nil}
+
+	// load the papers
+	err := p.LoadPapers()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	articles := p.AtLeastOnePaperExists()
+
+	for i, article := range articles {
+		println(i, article.Title, len(p.CheckPapersExist(&article)))
+
+		if i > 4 {
+			println("...")
+			break
+		}
+	}
+
+	if len(articles) < 1 {
+		t.Logf("Did not find any papers that exist :( ")
+		t.Fail()
+	}
+
 }
