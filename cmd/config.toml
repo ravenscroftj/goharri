@@ -1,0 +1,15 @@
+[[collections]]
+Name="BBC"
+IndexFile="/home/james/workspace/harri/data/paper_articles_bbc.json"
+PrefixPath="/home/james/workspace/harri/data/bbc_papers"
+
+[[collections]]
+Name="Guardian"
+IndexFile="/home/james/workspace/harri/data/paper_articles_guardian.json"
+PrefixPath="/home/james/workspace/harri/data"
+
+
+[[collections]]
+Name="HarriGT"
+IndexFile="/home/james/workspace/harri/data/paper_articles_harrigt.json"
+PrefixPath="/home/james/workspace/harri/data/harrigt_papers"

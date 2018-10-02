@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+type PaperCollectionManager struct {
+	Collections []PaperCollection
+}
+
 /*PaperCollection represents a collection of newspaper articles linked to scientific papers*/
 type PaperCollection struct {
 	Name       string
@@ -100,4 +104,35 @@ func (p *PaperCollection) CheckPapersExist(article *PaperArticle) []string {
 	}
 
 	return fullPaths
+}
+
+/*AddCollection adds a PaperCollection to an existing PaperCollectionManager
+ */
+func (pm *PaperCollectionManager) AddCollection(name string, indexFile string, prefix string) {
+
+	collection := PaperCollection{Name: name, IndexFile: indexFile, PathPrefix: prefix, Articles: nil}
+
+	pm.Collections = append(pm.Collections, collection)
+
+}
+
+/**
+* Return an array of all papers
+ */
+func (pm *PaperCollectionManager) AggregatePaperArticles() []PaperArticle {
+
+	var articles []PaperArticle
+
+	for _, collection := range pm.Collections {
+
+		// if the collection doesn't contain any articles, try to load the index
+		if collection.Articles == nil {
+			collection.LoadPapers()
+		}
+
+		//append papers with at least one existing paper
+		articles = append(articles, collection.AtLeastOnePaperExists()...)
+	}
+
+	return articles
 }
